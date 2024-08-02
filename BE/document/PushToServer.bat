@@ -1,0 +1,1 @@
+scp QT.zip vncadmin@103.28.173.9:/home/vncadmin/chuyendoiso/BE

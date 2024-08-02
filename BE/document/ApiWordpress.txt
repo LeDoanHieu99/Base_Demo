@@ -1,0 +1,10 @@
+http://vonhucong.id.vn/wp-json/wp/v2/posts/16
+
+// lấy 100 bài viết từ trang 1
+http://103.28.173.9:8080/wp-json/wp/v2/posts?_embed&per_page=100&page=1
+http://103.28.173.9:8080/wp-json/wp/v2/posts?_embed&per_page=10&page=4
+
+// more info 
+https://developer.wordpress.org/rest-api/reference/posts/
+
+

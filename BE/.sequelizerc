@@ -1,0 +1,35 @@
+/**
+ * Cài đặt sequelize
+ * B0 Cài 2 thư viện:     "sequelize": "6.33.0" và "sequelize-cli": "6.6.1"
+ * B1 tạo file .sequelizerc và thêm các nội dung như dưới
+ * B2 chạy lệnh: node_modules/.bin/sequelize init
+ */
+
+/**
+ * Sử dụng migration để tạo ra các table. after cmd, it will create 2 files: user.js and migration
+ * we can edit there files if we want
+ * npx sequelize-cli model:generate --name User --attributes firstName:string,lastName:string,email:string
+ * 
+ * This cmd will push table info to database include table and table's field
+ * npx sequelize-cli db:migrate --env test | development
+ * npx sequelize-cli db:migrate:undo // undo change
+ * 
+ * This cmd will create new migration but not create a new model (for add or remove a field in a model)
+ * npx sequelize migration:create --name update-organization
+ * npx sequelize-cli db:migrate
+ * 
+ * cmd will create seeder file. this file help us create, and delete objects of a table
+ * npx sequelize-cli seed:generate --name demo-user
+ * npx sequelize-cli db:seed:all 
+ * 
+ * https://medium.com/@anayooleru/modifying-an-existing-sequelize-migration-7ec206ce2b92
+ * https://www.youtube.com/watch?v=2nKhbJ3TJwI
+ */
+const path = require('path')
+
+module.exports = {
+    'config': path.resolve('./src/configs/', 'config.json'),
+    'migrations-path': path.resolve('./src/', 'migrations'),
+    'models-path': path.resolve('./src/', 'models'),
+    'seeders-path': path.resolve('./src/', 'seeders')
+}
